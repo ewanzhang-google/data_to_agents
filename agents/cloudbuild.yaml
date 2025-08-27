@@ -7,6 +7,7 @@ steps:
   - name: 'gcr.io/cloud-builders/gcloud'
     id: 'Unit Test'
     entrypoint: 'bash'
+    dir: 'agents'  # 👈 Added dir to change the working directory
     args:
       - '-c'
       - |
@@ -17,6 +18,7 @@ steps:
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: 'Setup Agentspace Authorization'
     entrypoint: 'bash'
+    dir: 'agents'  # 👈 Added dir to change the working directory
     secretEnv: ['OAUTH_CLIENT_SECRET']
     args:
       - '-c'
@@ -39,6 +41,7 @@ steps:
   - name: 'python:3.12'
     id: 'Install, Build, and Deploy'
     entrypoint: 'bash'
+    dir: 'agents'  # 👈 Added dir to change the working directory
     # The 'secrets' block makes the OAuth secret available to the python script if needed,
     # though it's primarily used by the auth step.
     secretEnv: ['OAUTH_CLIENT_SECRET']
@@ -54,7 +57,7 @@ steps:
         chmod +x scripts/cloud_build_deploy.sh
         
         echo "🚀 Starting the deployment script..."
-        export PATH="/builder/home/.local/bin:$$PATH"
+        export PATH="/builder/home/.local/bin:$PATH"
         ./scripts/cloud_build_deploy.sh
     env:
       # Pass substitution variables from the trigger to the deployment script's environment.
@@ -77,6 +80,7 @@ steps:
   - name: 'gcr.io/cloud-builders/gcloud'
     id: 'Functional Test'
     entrypoint: 'bash'
+    dir: 'agents'  # 👈 Added dir to change the working directory
     args:
       - '-c'
       - |
@@ -113,4 +117,3 @@ availableSecrets:
 # Configure build options.
 options:
   logging: CLOUD_LOGGING_ONLY
-
